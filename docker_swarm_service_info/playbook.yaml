@@ -1,0 +1,39 @@
+---
+- name: docker_node_facts example
+  # Must be executed on Swarm Manager
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - debug: msg="{{ ansible_host }}"
+
+    - name: Get facts about service that does not exist
+      community.docker.docker_swarm_service_info:
+        name: pihole
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Get facts about service that exist
+      community.docker.docker_swarm_service_info:
+        name: ADS-B_fr24feed
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Get facts about multiple image
+      # This will fail because lists are not supported
+      community.docker.docker_swarm_service_info:
+        name:
+          - pihole-pihole
+          - pihole_pihole-pihole
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output

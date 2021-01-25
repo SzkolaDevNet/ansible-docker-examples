@@ -1,0 +1,47 @@
+---
+- name: docker_node_facts example
+  # Must be executed on Swarm Manager
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - debug: msg="{{ ansible_host }}"
+
+    - name: Get Docker Swarm node facts
+      # By default it returns info about all nodes in Swarm
+      community.docker.docker_node_info:
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Get Docker Swarm node facts (self means only node where query is executed)
+      # Return only info about node, on which query is executed
+      community.docker.docker_node_info:
+        docker_host: '{{ ansible_host }}'
+        self: true
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Strip port number from ansible_host leaving only the hostname
+      # Just get the hostname part from ansible_host variable.
+      set_fact:
+        docker_host: "{{ ansible_host.split('.')[0] }}"
+
+    - name: Get Docker Swarm node facts (about specified node)
+      # Return only info about selected node - the node name is provided as 'name' mongodb_parameter:
+      # For demo purposes the 'docker_host' and 'name' is the same which means the same as 'self: true'
+      community.docker.docker_node_info:
+        docker_host: '{{ ansible_host }}'
+        name: '{{ docker_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"

@@ -1,0 +1,51 @@
+---
+- name: docker_node_facts example
+  # Must be executed on Swarm Manager
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - debug: msg="{{ ansible_host }}"
+
+    - name: Get facts about image that does not exist
+      community.docker.docker_image_info:
+        name: pacur/centos-7
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Get facts about image that exist
+      community.docker.docker_image_info:
+        name: portainer/portainer
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Get facts about multiple image that exist
+      community.docker.docker_image_info:
+        name:
+          - portainer/portainer
+          - portainer/agent
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
+
+    - name: Get facts about multiple image that exist and does not exist
+      community.docker.docker_image_info:
+        name:
+          - portainer/portainer
+          - pacur/centos-7
+          - portainer/agent
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output

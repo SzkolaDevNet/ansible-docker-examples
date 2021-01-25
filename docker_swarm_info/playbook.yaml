@@ -1,0 +1,17 @@
+---
+- name: docker_swarm_facts example
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - debug: msg="{{ ansible_host }}"
+
+    - name: Get swarm facts
+      community.docker.docker_swarm_info:
+        docker_host: '{{ ansible_host }}'
+        tls: true
+      register: output
+
+    - name: Print output
+      debug: msg="{{ output }}"
